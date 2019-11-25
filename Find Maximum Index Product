@@ -39,7 +39,8 @@ long long int solve(vector<long long int> arr) {
             DictStack.erase(prev(DictStack.end()));
             DictStack.insert(pair<int, int>(i, arr[i]));
         }
-    // If next number is greater than map's last number, erase that number and push a        // new one. If size of map was > or == to '2', find a mult(*) of indexes of new and
+    // If next number is greater than map's last number, erase that number and push a        
+    // new one. If size of map was > or == to '2', find a mult(*) of indexes of new and
     // last  first. Assign it to the answer.
         else if (arr[i] > prev(DictStack.end())->second && DictStack.size()>=2)
         {
