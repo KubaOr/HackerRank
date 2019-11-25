@@ -1,0 +1,147 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<string> split_string(string);
+
+// Replace main function's input and output for your own to run code
+long long int solve(vector<long long int> arr) {
+    map<int, long long int> DictStack;
+    long long int n=arr.size(), i, answer = 0, CheckAnswer = 0, temp=0;
+    int check=-1;
+    // Check if input contains more than 2 numbers, else output 0
+    // Using map as stack to push only unique and greater value numbers
+    if (n > 2)
+    {
+        DictStack.insert(pair<int, int>(0, arr[0]));
+        if (arr[1] > arr[0])
+        {
+            DictStack.erase(prev(DictStack.end()));
+            DictStack.insert(pair<int, int>(1, arr[1]));
+        }
+        else
+        {
+            
+            DictStack.insert(pair<int, int>(1, arr[1]));
+        }
+        
+    }
+    else
+    {
+        return 0;
+    }
+    for (i = 2; i < n; i++)
+    {
+        //Check if the numbers are unique
+        if (arr[i] == prev(DictStack.end())->second)
+        {
+            // if not, erase last number of map and insert it, but with the new index.
+            DictStack.erase(prev(DictStack.end()));
+            DictStack.insert(pair<int, int>(i, arr[i]));
+        }
+    // If next number is greater than map's last number, erase that number and push a        // new one. If size of map was > or == to '2', find a mult(*) of indexes of new and
+    // last  first. Assign it to the answer.
+        else if (arr[i] > prev(DictStack.end())->second && DictStack.size()>=2)
+        {
+            //If size of map was > or == to '2'
+            if (DictStack.size() >= 2) {
+                check = 1;
+            }
+            DictStack.erase(prev(DictStack.end())); 
+            if (check>0) {
+                CheckAnswer = (i + 1) * ((prev(DictStack.end())->first) + 1);
+            }
+            //Check if the new answer is greater than old one
+            if (CheckAnswer > answer)
+            {
+                answer = CheckAnswer;
+            }
+            //Check the final number once again
+            if (arr[i] >= prev(DictStack.end())->second)
+            {
+                DictStack.erase(prev(DictStack.end()));
+                DictStack.insert(pair<int, int>(i, arr[i]));
+            }
+            else {
+                DictStack.insert(pair<int, int>(i, arr[i]));
+            }
+        }
+        else
+        {
+            //Check if there are less than or equel to new number values left
+            //If they are, erase and insert a new one
+            //This test case is helpfull to undestand why
+            //6
+            //1 2 1 4 5 6
+            //Answer is '8'
+            if (arr[i] >= prev(DictStack.end())->second)
+            {
+                DictStack.erase(prev(DictStack.end()));
+            }
+            DictStack.insert(pair<int, int>(i, arr[i]));
+        }
+        check = -1;
+    }
+    return answer;
+
+
+}
+
+int main()
+{
+    ofstream fout(getenv("OUTPUT_PATH"));
+
+    long long int arr_count;
+    cin >> arr_count;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    string arr_temp_temp;
+    getline(cin, arr_temp_temp);
+
+    vector<string> arr_temp = split_string(arr_temp_temp);
+
+    vector<long long int> arr(arr_count);
+
+    for (int arr_itr = 0; arr_itr < arr_count; arr_itr++) {
+        int arr_item = stoi(arr_temp[arr_itr]);
+
+        arr[arr_itr] = arr_item;
+    }
+
+    long long int result = solve(arr);
+
+    fout << result << "\n";
+
+    fout.close();
+
+    return 0;
+}
+
+vector<string> split_string(string input_string) {
+    string::iterator new_end = unique(input_string.begin(), input_string.end(), [] (const char &x, const char &y) {
+        return x == y and x == ' ';
+    });
+
+    input_string.erase(new_end, input_string.end());
+
+    while (input_string[input_string.length() - 1] == ' ') {
+        input_string.pop_back();
+    }
+
+    vector<string> splits;
+    char delimiter = ' ';
+
+    size_t i = 0;
+    size_t pos = input_string.find(delimiter);
+
+    while (pos != string::npos) {
+        splits.push_back(input_string.substr(i, pos - i));
+
+        i = pos + 1;
+        pos = input_string.find(delimiter, i);
+    }
+
+    splits.push_back(input_string.substr(i, min(pos, input_string.length()) - i + 1));
+
+    return splits;
+}
